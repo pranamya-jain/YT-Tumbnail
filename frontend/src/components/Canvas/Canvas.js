@@ -240,7 +240,7 @@ const Canvas = () => {
   return (
     <div className="flex flex-col items-center space-y-6">
       {/* Canvas Container */}
-      <div className="relative">
+      <div className="relative" ref={containerRef}>
         <canvas
           ref={canvasRef}
           id="thumbnail-canvas"
@@ -256,7 +256,22 @@ const Canvas = () => {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={handleCanvasClick}
+          onDoubleClick={handleCanvasDoubleClick}
         />
+        
+        {/* Text Edit Overlay */}
+        {editingLayer && (
+          <TextEditOverlay
+            layer={editingLayer}
+            position={editPosition}
+            onSave={handleTextSave}
+            onCancel={handleTextCancel}
+            canvasScale={{
+              width: canvasRef.current?.getBoundingClientRect().width || 640,
+              height: canvasRef.current?.getBoundingClientRect().height || 360
+            }}
+          />
+        )}
         
         {/* Overlay for empty canvas */}
         {!state.backgroundImage && state.textLayers.length === 0 && (
