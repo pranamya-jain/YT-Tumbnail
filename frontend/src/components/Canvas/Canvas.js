@@ -43,7 +43,143 @@ const Canvas = () => {
     }
   }, [state.canvas, state.backgroundImage, state.textLayers, state.selectedLayer]);
 
-  const drawTextLayers = (ctx) => {
+  // Helper function to get canvas coordinates from mouse event
+  const getCanvasCoordinates = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+      scaleX,
+      scaleY
+    };
+  };
+
+  // Helper function to find text layer at coordinates
+  const findTextLayerAt = (x, y) => {
+    // Check layers in reverse order (top to bottom)
+    for (let i = state.textLayers.length - 1; i >= 0; i--) {
+      const layer = state.textLayers[i];
+      if (layer.type === 'text') {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.font = `${layer.style.fontWeight || 'normal'} ${layer.style.fontSize}px ${layer.style.fontFamily}`;
+        const textMetrics = ctx.measureText(layer.content);
+        const textHeight = layer.style.fontSize;
+        
+        if (x >= layer.position.x && x <= layer.position.x + textMetrics.width &&
+            y >= layer.position.y && y <= layer.position.y + textHeight) {
+          return layer;
+        }
+      }
+    }
+    return null;
+  };
+
+  // Handle mouse down - start potential drag or select
+  const handleCanvasMouseDown = (e) => {
+    const coords = getCanvasCoordinates(e);
+    const clickedLayer = findTextLayerAt(coords.x, coords.y);
+    
+    if (clickedLayer) {
+      // Select the layer
+      dispatch({
+        type: 'SELECT_LAYER',
+        payload: clickedLayer.id
+      });
+
+      // Prepare for potential drag
+      setDraggedLayer(clickedLayer);
+      setDragStartPos({ x: coords.x, y: coords.y });
+      setDragOffset({
+        x: coords.x - clickedLayer.position.x,
+        y: coords.y - clickedLayer.position.y
+      });
+
+      // Track for double-click detection
+      const currentTime = Date.now();
+      const timeDiff = currentTime - lastClickTime;
+      setLastClickTime(currentTime);
+
+      // If it's a double-click (within 300ms), start editing
+      if (timeDiff < 300) {
+        const domX = (clickedLayer.position.x / coords.scaleX);
+        const domY = (clickedLayer.position.y / coords.scaleY);
+        
+        setEditPosition({ x: domX, y: domY });
+        setEditingLayer(clickedLayer);
+        setDraggedLayer(null); // Cancel drag for editing
+      }
+    } else {
+      // Clicked on empty area
+      dispatch({
+        type: 'SELECT_LAYER',
+        payload: null
+      });
+      setEditingLayer(null);
+      setDraggedLayer(null);
+    }
+  };
+
+  // Handle mouse move - perform drag if in progress
+  const handleCanvasMouseMove = (e) => {
+    if (!draggedLayer || editingLayer) return;
+
+    const coords = getCanvasCoordinates(e);
+    const dragDistance = Math.sqrt(
+      Math.pow(coords.x - dragStartPos.x, 2) + 
+      Math.pow(coords.y - dragStartPos.y, 2)
+    );
+
+    // Start dragging if mouse moved more than 5 pixels
+    if (dragDistance > 5 && !isDragging) {
+      setIsDragging(true);
+      document.body.style.cursor = 'grabbing';
+    }
+
+    if (isDragging) {
+      // Calculate new position with boundary constraints
+      const newX = Math.max(0, Math.min(
+        coords.x - dragOffset.x,
+        state.canvas.width - 200 // Leave some margin for text
+      ));
+      const newY = Math.max(draggedLayer.style.fontSize, Math.min(
+        coords.y - dragOffset.y,
+        state.canvas.height - 20
+      ));
+
+      // Update layer position
+      dispatch({
+        type: 'UPDATE_TEXT_LAYER',
+        payload: {
+          id: draggedLayer.id,
+          updates: {
+            position: { x: newX, y: newY }
+          }
+        }
+      });
+    }
+  };
+
+  // Handle mouse up - end drag
+  const handleCanvasMouseUp = (e) => {
+    if (isDragging) {
+      setIsDragging(false);
+      document.body.style.cursor = 'default';
+    }
+    setDraggedLayer(null);
+  };
+
+  // Handle mouse leave - cancel drag
+  const handleCanvasMouseLeave = (e) => {
+    if (isDragging) {
+      setIsDragging(false);
+      document.body.style.cursor = 'default';
+    }
+    setDraggedLayer(null);
+  };
     state.textLayers.forEach(layer => {
       if (layer.type === 'text') {
         ctx.save();
