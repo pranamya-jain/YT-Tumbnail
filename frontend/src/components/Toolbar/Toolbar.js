@@ -26,7 +26,7 @@ const Toolbar = () => {
     dispatch({
       type: 'ADD_TEXT_LAYER',
       payload: {
-        content: 'New Text',
+        content: 'Double-click to edit',
         position: { x: Math.random() * 300 + 100, y: Math.random() * 200 + 100 }
       }
     });
