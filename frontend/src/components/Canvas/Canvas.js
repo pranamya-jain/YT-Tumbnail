@@ -18,6 +18,41 @@ const Canvas = () => {
   const [lastClickTime, setLastClickTime] = useState(0);
   const fileInputRef = useRef(null);
 
+  // Helper function to get canvas coordinates from mouse event
+  const getCanvasCoordinates = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY,
+      scaleX,
+      scaleY
+    };
+  };
+
+  // Helper function to find text layer at coordinates
+  const findTextLayerAt = (x, y) => {
+    // Check layers in reverse order (top to bottom)
+    for (let i = state.textLayers.length - 1; i >= 0; i--) {
+      const layer = state.textLayers[i];
+      if (layer.type === 'text') {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.font = `${layer.style.fontWeight || 'normal'} ${layer.style.fontSize}px ${layer.style.fontFamily}`;
+        const textMetrics = ctx.measureText(layer.content);
+        const textHeight = layer.style.fontSize;
+        
+        if (x >= layer.position.x && x <= layer.position.x + textMetrics.width &&
+            y >= layer.position.y && y <= layer.position.y + textHeight) {
+          return layer;
+        }
+      }
+    }
+    return null;
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
