@@ -227,6 +227,32 @@ const Canvas = () => {
     setEditingLayer(null);
   };
 
+  // Force canvas re-render when text layers change
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = state.canvas.width;
+    canvas.height = state.canvas.height;
+
+    // Clear canvas
+    ctx.fillStyle = state.canvas.backgroundColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw background image if exists
+    if (state.backgroundImage) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        drawTextLayers(ctx);
+      };
+      img.src = state.backgroundImage;
+    } else {
+      drawTextLayers(ctx);
+    }
+  }, [state.canvas, state.backgroundImage, state.textLayers, state.selectedLayer]);
+
   const addTextLayer = () => {
     dispatch({
       type: 'ADD_TEXT_LAYER',
