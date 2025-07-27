@@ -164,6 +164,67 @@ const Canvas = () => {
       type: 'SELECT_LAYER',
       payload: clickedLayer
     });
+
+    // Close text editing if clicking elsewhere
+    if (!clickedLayer) {
+      setEditingLayer(null);
+    }
+  };
+
+  const handleCanvasDoubleClick = (e) => {
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    // Check if double-clicking on a text layer
+    let clickedLayer = null;
+    state.textLayers.forEach(layer => {
+      if (layer.type === 'text') {
+        const ctx = canvas.getContext('2d');
+        ctx.font = `${layer.style.fontWeight || 'normal'} ${layer.style.fontSize}px ${layer.style.fontFamily}`;
+        const textMetrics = ctx.measureText(layer.content);
+        const textHeight = layer.style.fontSize;
+        
+        if (x >= layer.position.x && x <= layer.position.x + textMetrics.width &&
+            y >= layer.position.y && y <= layer.position.y + textHeight) {
+          clickedLayer = layer;
+        }
+      }
+    });
+
+    if (clickedLayer) {
+      // Convert canvas coordinates to DOM coordinates for input positioning
+      const domX = (clickedLayer.position.x / scaleX);
+      const domY = (clickedLayer.position.y / scaleY);
+      
+      setEditPosition({ x: domX, y: domY });
+      setEditingLayer(clickedLayer);
+      
+      dispatch({
+        type: 'SELECT_LAYER',
+        payload: clickedLayer.id
+      });
+    }
+  };
+
+  const handleTextSave = (newText) => {
+    if (editingLayer) {
+      dispatch({
+        type: 'UPDATE_TEXT_LAYER',
+        payload: {
+          id: editingLayer.id,
+          updates: { content: newText }
+        }
+      });
+    }
+    setEditingLayer(null);
+  };
+
+  const handleTextCancel = () => {
+    setEditingLayer(null);
   };
 
   const addTextLayer = () => {
