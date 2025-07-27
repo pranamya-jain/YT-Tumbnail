@@ -6,9 +6,12 @@ import TextEditOverlay from './TextEditOverlay';
 
 const Canvas = () => {
   const canvasRef = useRef(null);
+  const containerRef = useRef(null);
   const { state, dispatch } = useThumbnail();
   const [draggedLayer, setDraggedLayer] = useState(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [editingLayer, setEditingLayer] = useState(null);
+  const [editPosition, setEditPosition] = useState({ x: 0, y: 0 });
   const fileInputRef = useRef(null);
 
   useEffect(() => {
