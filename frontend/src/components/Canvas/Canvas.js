@@ -231,7 +231,7 @@ const Canvas = () => {
     dispatch({
       type: 'ADD_TEXT_LAYER',
       payload: {
-        content: 'Click to edit',
+        content: 'Double-click to edit',
         position: { x: 100, y: 100 }
       }
     });
