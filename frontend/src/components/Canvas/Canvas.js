@@ -396,7 +396,15 @@ const Canvas = () => {
 
       {/* Canvas Info */}
       <div className="text-sm text-muted-foreground text-center">
-        Canvas: 1280×720 (YouTube Standard) • Zoom: 50%
+        <p>Canvas: 1280×720 (YouTube Standard) • Zoom: 50%</p>
+        {isDragging && (
+          <p className="text-green-400 mt-1">
+            🎯 Dragging text - Release to place
+          </p>
+        )}
+        <p className="text-xs mt-1">
+          💡 Click and drag to move text • Double-click to edit
+        </p>
       </div>
     </div>
   );
