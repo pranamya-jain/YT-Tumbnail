@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useThumbnail } from '../../contexts/ThumbnailContext';
 import { Button } from '../ui/button';
 import { Upload, Type } from 'lucide-react';
+import TextEditOverlay from './TextEditOverlay';
 
 const Canvas = () => {
   const canvasRef = useRef(null);
