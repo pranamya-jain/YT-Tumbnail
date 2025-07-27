@@ -180,6 +180,8 @@ const Canvas = () => {
     }
     setDraggedLayer(null);
   };
+
+  const drawTextLayers = (ctx) => {
     state.textLayers.forEach(layer => {
       if (layer.type === 'text') {
         ctx.save();
