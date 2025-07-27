@@ -33,7 +33,7 @@ const thumbnailReducer = (state, action) => {
       const newLayer = {
         id: Date.now().toString(),
         type: 'text',
-        content: action.payload.content || 'New Text',
+        content: action.payload.content || 'Double-click to edit',
         position: action.payload.position || { x: 100, y: 100 },
         style: {
           fontSize: 48,
