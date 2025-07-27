@@ -182,6 +182,9 @@ const Sidebar = () => {
                         placeholder="Enter text..."
                         className="mt-1"
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        💡 Tip: Double-click text on canvas to edit directly
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
