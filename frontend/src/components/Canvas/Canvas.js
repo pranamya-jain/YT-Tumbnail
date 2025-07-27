@@ -12,6 +12,10 @@ const Canvas = () => {
   const [isDragOver, setIsDragOver] = useState(false);
   const [editingLayer, setEditingLayer] = useState(null);
   const [editPosition, setEditPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
+  const [lastClickTime, setLastClickTime] = useState(0);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
