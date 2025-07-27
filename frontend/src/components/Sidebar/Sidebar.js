@@ -158,6 +158,7 @@ const Sidebar = () => {
                     <Type className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">No text layers yet</p>
                     <p className="text-xs">Click "Add Text" to start</p>
+                    <p className="text-xs mt-2">💡 Double-click text to edit</p>
                   </div>
                 )}
               </CardContent>
