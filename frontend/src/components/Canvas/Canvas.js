@@ -53,6 +53,7 @@ const Canvas = () => {
     return null;
   };
 
+  // Canvas rendering effect
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
