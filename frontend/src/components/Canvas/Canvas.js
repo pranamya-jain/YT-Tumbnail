@@ -220,7 +220,7 @@ const Canvas = () => {
           const textMetrics = ctx.measureText(layer.content);
           const textHeight = style.fontSize;
           ctx.setLineDash([5, 5]);
-          ctx.strokeStyle = '#ff0000';
+          ctx.strokeStyle = isDragging ? '#00ff41' : '#ff0000';
           ctx.lineWidth = 2;
           ctx.strokeRect(
             layer.position.x - 5,
