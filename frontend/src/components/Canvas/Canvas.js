@@ -313,9 +313,11 @@ const Canvas = () => {
         <canvas
           ref={canvasRef}
           id="thumbnail-canvas"
-          className={`border-2 rounded-lg shadow-2xl cursor-pointer transition-all duration-300 ${
+          className={`border-2 rounded-lg shadow-2xl transition-all duration-300 ${
             isDragOver ? 'border-red-500 border-dashed' : 'border-border'
-          } hover:shadow-3xl`}
+          } hover:shadow-3xl ${
+            isDragging ? 'cursor-grabbing' : 'cursor-pointer'
+          }`}
           style={{
             width: '640px',
             height: '360px',
@@ -324,8 +326,10 @@ const Canvas = () => {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={handleCanvasClick}
-          onDoubleClick={handleCanvasDoubleClick}
+          onMouseDown={handleCanvasMouseDown}
+          onMouseMove={handleCanvasMouseMove}
+          onMouseUp={handleCanvasMouseUp}
+          onMouseLeave={handleCanvasMouseLeave}
         />
         
         {/* Text Edit Overlay */}
